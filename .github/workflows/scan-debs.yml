@@ -1,0 +1,49 @@
+name: Scan and sign
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**.deb"
+
+jobs:
+  scan-and-sign:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install TruffleHog
+        run: curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Scan debs for secrets
+        id: scan
+        run: trufflehog filesystem . --fail
+        continue-on-error: true
+
+      - name: Revert commit if secrets found
+        if: steps.scan.outcome == 'failure'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git revert --no-edit HEAD
+          git push
+          echo "::error::Secrets detected in .deb files — commit reverted."
+          exit 1
+
+      - name: Import GPG key
+        run: echo "${{ secrets.APT_GPG_KEY }}" | gpg --batch --import
+
+      - name: Sign Release
+        run: |
+          gpg --batch --yes --armor --detach-sign --output Release.gpg Release
+          gpg --batch --yes --clearsign --output InRelease Release
+
+      - name: Commit signatures
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Release.gpg InRelease
+          git diff --cached --quiet || git commit -m "Sign Release" && git push
