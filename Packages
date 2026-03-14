@@ -1,0 +1,23 @@
+Package: camilladsp
+Version: 3.0.1
+Architecture: armhf
+Maintainer: local
+Filename: ./camilladsp_3.0.1_armhf.deb
+Size: 1973764
+MD5sum: 5cce9779ca7326d13fa35484f388e047
+SHA1: 7e094911aa0c49f1a4ff74621b5ae56d838f6e88
+SHA256: 6ff9786f8bc115689931fdd2ae67d9f6b0f4b12880d375015fdb8cf50bf09add
+Description: CamillaDSP audio signal processor
+
+Package: camillagui
+Version: 3.0.3
+Architecture: armhf
+Maintainer: local
+Depends: camilladsp
+Filename: ./camillagui_3.0.3_armhf.deb
+Size: 14810012
+MD5sum: 88ce823ebdbb9c48fd66618806da56df
+SHA1: b5459b999e4439e5a7d0b08c3412104721633743
+SHA256: a9d84b7d7d6ab9190624ea0f268ffe86ad23f0375122aca16aabf427c26a7ebe
+Description: CamillaGUI web interface for CamillaDSP
+

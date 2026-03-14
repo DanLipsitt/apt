@@ -1,0 +1,21 @@
+Architectures: armhf
+Components: main
+Date: Sat, 14 Mar 2026 22:25:01 +0000
+Label: DanLipsitt apt repo
+Origin: DanLipsitt
+MD5Sum:
+ c0010eafdd279fc4447c547155c48b69              697 Packages
+ 98ea2db836088c9267051a22ad445ab7              426 Packages.gz
+ 5fcf22be54297cb4f63d09a1c2d66246              122 Release
+SHA1:
+ b0f6e006e68ac1e500fc33a2df59c7727fb7e68a              697 Packages
+ 229a9f3a2bcb21ce43f341b68dc92c24d13a7a32              426 Packages.gz
+ 3bf7d1d9b93cd9ece83dc28a0958169d7461ad98              122 Release
+SHA256:
+ 07f85b9d56e2c66f955f407548905f5a7460321551ff61073b92147d54873f30              697 Packages
+ 565d188be722ff4b8f82b8f8da89c1eb5ba7f156450975253e74990be1cdfac5              426 Packages.gz
+ d92392f4c3c4f20472e8628e75d27a2e3fddb289cfc05d06f55620853472636c              122 Release
+SHA512:
+ 45b75d16ac71f7172abead41a12904730832304d853aa377721984bf9bb4575e76321e7ccceead0ce6cee23c4134104a9394f31a232c1a82d50ea5ebf2a8a57e              697 Packages
+ 4ca9e35f476aef0fa4e1f10f5f29f61fc200b06f668f6dc8dddb9714c64fb8df38b2e3195d91487a17247bee71122232448804e11fa3bf4bb7b148bba84aa61a              426 Packages.gz
+ bf1917544f5afaa2f99682e3a01964836f8455b1954b544c10ba828b404449ec7ea53f3db4c440db5b71d0bcfdc07410a9b7c73e301fbae5245655e012d747cb              122 Release
