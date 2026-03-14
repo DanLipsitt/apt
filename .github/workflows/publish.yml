@@ -1,0 +1,53 @@
+name: Publish to apt repo
+
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: Name of the artifact containing .deb files
+        required: true
+        type: string
+      commit-message:
+        description: Commit message for the apt repo
+        required: true
+        type: string
+    secrets:
+      deploy-key:
+        description: SSH deploy key with write access to DanLipsitt/apt
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: debs/
+
+      - uses: actions/checkout@v4
+        with:
+          repository: DanLipsitt/apt
+          ssh-key: ${{ secrets.deploy-key }}
+          path: apt-repo/
+
+      - name: Install apt tools
+        run: sudo apt-get install -y apt-utils
+
+      - name: Update apt repo
+        run: |
+          cp debs/*.deb apt-repo/
+          cd apt-repo
+          dpkg-scanpackages --multiversion . > Packages
+          gzip -k -f Packages
+          apt-ftparchive \
+            -o APT::FTPArchive::Release::Origin="DanLipsitt" \
+            -o APT::FTPArchive::Release::Label="DanLipsitt apt repo" \
+            -o APT::FTPArchive::Release::Architectures="armhf" \
+            -o APT::FTPArchive::Release::Components="main" \
+            release . > Release
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "${{ inputs.commit-message }}"
+          git push
