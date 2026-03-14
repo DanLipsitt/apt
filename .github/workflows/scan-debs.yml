@@ -1,4 +1,4 @@
-name: Scan debs for secrets
+name: Scan and sign
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - "**.deb"
 
 jobs:
-  scan:
+  scan-and-sign:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -32,3 +32,18 @@ jobs:
           git push
           echo "::error::Secrets detected in .deb files — commit reverted."
           exit 1
+
+      - name: Import GPG key
+        run: echo "${{ secrets.APT_GPG_KEY }}" | gpg --batch --import
+
+      - name: Sign Release
+        run: |
+          gpg --batch --yes --armor --detach-sign --output Release.gpg Release
+          gpg --batch --yes --clearsign --output InRelease Release
+
+      - name: Commit signatures
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Release.gpg InRelease
+          git diff --cached --quiet || git commit -m "Sign Release" && git push
