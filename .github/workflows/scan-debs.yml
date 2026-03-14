@@ -20,17 +20,18 @@ jobs:
 
       - name: Scan debs for secrets
         id: scan
-        run: trufflehog filesystem . --fail
+        run: trufflehog filesystem . --exclude-paths=<(echo '.git') --fail
         continue-on-error: true
 
-      - name: Revert commit if secrets found
+      - name: Remove debs and push if secrets found
         if: steps.scan.outcome == 'failure'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git revert --no-edit HEAD
+          git diff --name-only HEAD~1 HEAD -- '*.deb' | xargs git rm -f
+          git commit -m "Remove debs: secrets detected by TruffleHog"
           git push
-          echo "::error::Secrets detected in .deb files — commit reverted."
+          echo "::error::Secrets detected in .deb files — debs removed."
           exit 1
 
       - name: Import GPG key
