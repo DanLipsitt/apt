@@ -1,0 +1,34 @@
+name: Scan debs for secrets
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**.deb"
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install TruffleHog
+        run: curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Scan debs for secrets
+        id: scan
+        run: trufflehog filesystem . --fail
+        continue-on-error: true
+
+      - name: Revert commit if secrets found
+        if: steps.scan.outcome == 'failure'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git revert --no-edit HEAD
+          git push
+          echo "::error::Secrets detected in .deb files — commit reverted."
+          exit 1
